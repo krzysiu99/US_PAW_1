@@ -21,7 +21,7 @@
                             Kwota kredytu:
                         </td>
                         <td>
-                            <input type="number" name="kwota" class="styl" placeholder="np: 2000.00" min="0" stage="0.01" value="<?php if(isset($_POST['kwota']))echo$_POST['kwota'];?>"> zł
+                            <input type="number" name="kwota" class="styl" placeholder="np: 2000.00" min="0" step="0.01" value="<?php if(isset($_POST['kwota']))echo$_POST['kwota'];?>"> zł
                         </td>
                     </tr>
                     <tr>
