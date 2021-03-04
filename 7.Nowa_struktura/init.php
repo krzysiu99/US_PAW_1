@@ -1,5 +1,4 @@
 <?php
-    include_once("app/straznik.php");
     include_once("core/config.class.php");
     $config = new core\config();
     include_once("config.php");
@@ -27,6 +26,15 @@
             ));
         }
         return $smarty;
+    }
+
+    include_once("app/logowanie.class.php");
+    $log = new app\logowanie();
+    $config = getConf();
+    $config->user = $log->getUser();
+    function &getLogowanie(){
+        global $log;
+        return $log;
     }
 
     include_once("core/classLoader.class.php");

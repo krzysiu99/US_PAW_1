@@ -3,14 +3,15 @@
 
     switch($akcja){
         case "logowanie":
-            include_once("app/logowanie.php");
+            //include_once("app/logowanie.php");
+            $log = getLogowanie();
+            $log->wykonaj();
         break;
         default:
-            //include_once("app/kalkulator.class.php");
+            //sprawdz logowanie
+            $log = getLogowanie();
+            $log->sprawdz();
+
             $kalk = new app\kalkulator();
-            
-            //wymagane logowanie
-            if($config->user != NULL)
-                $kalk->wykonaj();
-            else wymagane_logowanie();
+            $kalk->wykonaj();
     }
