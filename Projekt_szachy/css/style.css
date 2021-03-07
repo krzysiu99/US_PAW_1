@@ -1,0 +1,89 @@
+*{
+    margin: 0; padding: 0;
+}
+body{
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    border-collapse: collapse;
+}
+/* main{
+    displaY: block;
+    widtH: calc(100vh - 40px + 20vw);
+    margin: 0 auto;
+} */
+table{
+    bordeR: solid 2px black;
+    floaT: left;
+}
+table td, table th{
+    width: calc((100vh - 200px) / 8);
+    min-width: calc((100vh - 200px) / 8);
+    max-width: calc((100vh - 200px) / 8);
+    heighT: calc((100vh - 200px) / 8);
+    min-heighT: calc((100vh - 200px) / 8);
+    max-heighT: calc((100vh - 200px) / 8);
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background-size: 85%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+th{
+    min-width: auto !IMPORTANT;
+    min-height: auto !IMPORTANT;
+}
+.b {
+    background: #FF3333;
+}
+table th{
+    width: 25px;
+    heighT: 25px;
+}
+td img{
+    height: 100%;
+    width: 100%;
+}
+.figuraWroga{
+    cursor: not-allowed;
+}
+.figuraMoja{
+    cursor: move;
+}
+.aktywne {
+    background: orange;
+}
+
+/* h2{
+    font-weighT: normal;
+    displaY: block;
+    background: #CCCCFF;
+}
+h3{
+    font-weighT: normal;
+    font-style: italic;
+    font-size: 1.8vh;
+    padding-top: 5px;
+} */
+/* #right, #left{
+    border: solid 5px #CCCCFF;
+    text-align: center;
+    floaT: left;
+    width: 8vw;
+    heighT: calc(100vh - 80px);
+    font-size: 2vh;
+}
+#right img, #left img{
+    height: calc((100vh - 150px) / 8);
+    margin: 0.9vh auto -5px auto;
+    clear: both;
+}
+#pkt2, #pkt1{
+    heighT: 60px;
+    background: #CCCCFF;
+    text-align: center;
+    floaT: left;
+    width: calc(8vw + 10px);
+    line-heighT: 55px;
+    margin-top: -5px;
+} */
