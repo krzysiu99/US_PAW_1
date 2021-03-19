@@ -3,7 +3,7 @@
     $user = NULL;
 
     //smarty
-    include('./lib/smarty/Smarty.class.php');
+    include('./lib/Smarty/Smarty.class.php');
     $smarty = new Smarty;
     $smarty->assign('folder', folder);
     $smarty->assign('skrypt', skrypt);

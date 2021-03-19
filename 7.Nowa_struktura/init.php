@@ -13,7 +13,7 @@
     function &getSmarty(){
         global $smarty;
         if(!isset($smarty)){
-            include('lib/smarty/Smarty.class.php');
+            include('lib/Smarty/Smarty.class.php');
             $smarty = new Smarty;
             $config = getConf();
             $smarty->assign('folder', $config->folder);
@@ -37,7 +37,7 @@
         return $log;
     }
 
-    include_once("core/classLoader.class.php");
+    include_once("core/ClassLoader.class.php");
     $cloader = new core\ClassLoader();
     function &getLoader(){
         global $cloader;
