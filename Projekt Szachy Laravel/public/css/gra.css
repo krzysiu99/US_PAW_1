@@ -1,0 +1,156 @@
+*{
+    margin: 0; padding: 0;
+}
+body{
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+}
+table{
+    floaT: left;
+    border: none;
+    border-collapse: collapse;
+}
+table td, table th{
+    width: calc((100vh - 200px) / 8);
+    min-width: calc((100vh - 200px) / 8);
+    max-width: calc((100vh - 200px) / 8);
+    heighT: calc((100vh - 200px) / 8);
+    min-heighT: calc((100vh - 200px) / 8);
+    max-heighT: calc((100vh - 200px) / 8);
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background-size: 85%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background: white;
+    border: none;
+}
+th{
+    min-width: auto !IMPORTANT;
+    min-height: auto !IMPORTANT;
+}
+.b {
+    background: #FF3333;
+}
+table th{
+    width: 25px;
+    heighT: 25px;
+}
+td img{
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    margin-bottom: -6px;
+}
+.figuraWroga{
+    cursor: not-allowed;
+}
+.figuraMoja{
+    cursor: move;
+}
+.aktywne {
+    background: orange;
+}
+
+main{
+    width: max-content;
+    margin: 20px auto;
+}
+
+section.game{
+    widtH: 250px;
+    height: 100%;
+    background: rgb(221, 221, 221);
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+section.game:after{
+    content: "© Krzysztof Niestrój 2021";
+    displaY: block;
+    text-align: center;
+    position: fixed;
+    font-size: 0.8em;
+    floaT: right;
+    right: 5px;
+    bottom: 5px;
+    margin-left: 10px;
+    color: white;
+}
+section h2{
+    font-size: 1.1em;
+    text-align: center;
+    padding: 10px 0;
+}
+section table.min img{
+    width: 50px;
+    height: 50px;
+    margin: 0;
+}
+section table.min {
+    border: none;
+    margin: 0 auto;
+    floaT: unset;
+    background: none;
+}
+section table.min td{
+    widtH: max-content;
+    max-widtH: max-content;
+    min-widtH: max-content;
+    height: 30px;
+    max-height: 30px;
+    min-height: 30px;
+    padding: 5px;
+    font-size: 0.9em;
+    font-style: italic;
+    background: none;
+}
+section table.min td:nth-child(3n+2){
+    widtH: 120px;
+    max-widtH: 120px;
+    min-widtH: 120px;
+    word-break: break-all;
+}
+section #tura{
+    background: rgb(74, 211, 74);
+    color: white;
+    padding: 2px;
+}
+#tura.red{
+    background: rgb(240, 174, 20);
+}
+main section button, main section input[type=submit]{
+    background: cornflowerblue;
+    padding: 8px 10px;
+    border-radius: 20px;
+    border: none;
+    margin: 5px auto;
+    color: white;
+    text-align: center;
+    displaY: block;
+    font-size: 0.9em;
+}
+main section button:hover, main section input[type=submit]:hover{
+    background: black;
+    cursor: pointer;
+}
+
+#wymiana {
+    display: none;
+    position: fixed;
+    width: 500px;
+    top: 50px;
+    left: calc(50vw - 250px);
+    background: rgb(182, 214, 211);
+    border: solid 10px rgb(34, 212, 198);
+    border-radius: 5px;
+    text-align: center;
+}
+#wymiana img{
+    width: 100px;
+    margin: 10px;
+    cursor: pointer;
+}
+#wymiana img:hover{
+    filter:brightness(80%);
+}

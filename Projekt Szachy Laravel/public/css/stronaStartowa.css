@@ -1,0 +1,88 @@
+body{
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    border-collapse: collapse;
+    background-image: url("../images/background.png");
+}
+#wrapper{
+    width: 1000px;
+    margin: auto;
+    margin-top: calc(50vh - 250px);
+}
+section{
+    widtH: 500px;
+    height: 500px;
+    max-heighT: 500px;
+    overflow-y: auto;
+}
+section.left{
+    border-top-left-radius: 50px;
+    border-bottom-left-radius: 50px;
+    background: #E0E0E0;
+    float: left;
+}
+#wrapper section.right{
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
+    background: #585858;
+    float: right;
+    color: #E0E0E0;
+    text-align: center;
+}
+section img{
+    margin: 20px auto;
+    displaY: block;
+}
+section .icon{
+    margin: 5px -25px 0 25px;
+    float: left;
+    
+}
+section small{
+    font-size:0.6em;
+    font-style: italic;
+    text-align: center;
+    margin: -35px 0 5px 0;
+    displaY: block;
+}
+section .icon:nth-child(2n+1){
+    margin-top: 12px;
+}
+section input[type=text], section input[type=password] {
+    line-height: 30px;
+    height: 30px;
+    width: 80%;
+    margin: 10px auto;
+    displaY: block;
+    border: solid 2px rgb(58, 58, 58);
+    font-size: 1.1em;
+    text-align: center;
+    background: rgb(184, 184, 184);
+    font-family: 'Courier New', Courier, monospace;
+}
+#wrapper section input[type=submit]{
+    font-size: 1em;
+    padding: 5px 15px;
+    background: cornflowerblue;
+    border: none;
+    border-radius: 20px;
+    color: white;
+    margin-left: 65px;
+    margin-top: -10px;
+}
+#wrapper section input[type=submit]:nth-child(2n+1){
+    floaT: right;
+    margin-right: 45px;
+    background: rgb(50, 223, 50);
+    margin-top: -6px;
+}
+#error{
+    display: block;
+    background: rgb(245, 72, 72);
+    text-align: center;
+    width: 90%;
+    margin: 20px auto 20px auto;
+    padding: 5px;
+    color: white;
+    font-size: 0.9em;
+}
