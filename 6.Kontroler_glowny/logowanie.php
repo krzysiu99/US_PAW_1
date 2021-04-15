@@ -4,7 +4,7 @@
 
     //smarty
     include('lib/smarty/Smarty.class.php');
-    $smarty = new Smarty;
+    $smarty = new Smarty();
     $smarty->assign('folder', $config->folder);
     $smarty->assign('skrypt', $config->skrypt);
     $smarty->assign('action_root', $config->action_root);

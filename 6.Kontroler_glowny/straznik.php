@@ -7,7 +7,7 @@
 
     function wymagane_logowanie(){
         include('lib/Smarty/Smarty.class.php');
-        $smarty = new Smarty;
+        $smarty = new Smarty();
         global $config;
         
         $smarty->assign('folder', $config->folder);

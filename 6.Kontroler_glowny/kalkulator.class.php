@@ -49,7 +49,7 @@
         }
         function wyswietl(){
             include('lib/smarty/Smarty.class.php');
-            $smarty = new Smarty;
+            $smarty = new smarty();
             global $config;
             $smarty->assign('folder', $config->folder);
             $smarty->assign('skrypt', $config->skrypt);
