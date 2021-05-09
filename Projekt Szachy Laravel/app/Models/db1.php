@@ -9,7 +9,7 @@ class db1 {
     function __construct() {
         try{
 
-            $pdo = new PDO("mysql:host=192.168.8.254;dbname=szachy;charset=utf8", "root", "");
+            $pdo = new PDO("mysql:host=192.168.8.254;dbname=niestroj21_szachy;charset=utf8", "root", "");
             $this->pdo = $pdo;
 
         } catch(PDOException $e){

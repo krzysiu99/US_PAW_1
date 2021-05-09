@@ -17,6 +17,7 @@ class game extends Controller {
         private $graczBiale;
         private $graczCzarne;
         private $komunikat;
+        private $gid;
 
         private $db;
         private $config;
@@ -29,20 +30,21 @@ class game extends Controller {
             $this->msg = new msg1();
             $this->user = new user1();
 
-            $this->db->przygotuj("SELECT czarne, biale FROM para WHERE (para.czarne = :id OR para.biale = :id) LIMIT 1");
+            $this->db->przygotuj("SELECT GID, graczCzarne, graczBiale FROM gra WHERE graczBiale = :id OR graczCzarne = :id LIMIT 1");
             $this->db->zmienna(":id",$this->user->getUID(),"int");
             $this->db->wykonaj();
             $z = $this->db->przechwyc();
             while($baza = $z->fetch()){
-                if($baza['czarne'] == $this->user->getUID()) {
+                $this->gid = $baza['GID'];
+                if($baza['graczCzarne'] == $this->user->getUID()) {
                     $this->gracz = 2;
                     $this->graczCzarne = $this->user->getLogin();
-                    $this->graczBiale = $this->user->nick($baza['biale']);
+                    $this->graczBiale = $this->user->nick($baza['graczBiale']);
                 }
                 else {
                     $this->gracz = 1;
                     $this->graczBiale = $this->user->getLogin();
-                    $this->graczCzarne = $this->user->nick($baza['czarne']);
+                    $this->graczCzarne = $this->user->nick($baza['graczCzarne']);
                 }
             }
             $z->closeCursor();
@@ -79,15 +81,14 @@ class game extends Controller {
         }
 
         function koniecGry($wygral){
-            $this->db->przygotuj("SELECT gra.GID, gra.tura, para.PID, para.czarne, para.biale FROM gra, para WHERE gra.para = para.PID AND (para.czarne = :id OR para.biale = :id) LIMIT 1");
+            $this->db->przygotuj("SELECT GID, tura, graczCzarne, graczBiale FROM gra WHERE graczBiale = :id OR graczCzarne = :id LIMIT 1");
             $this->db->zmienna(":id",$this->user->getUID(),"int");
             $this->db->wykonaj();
             $z = $this->db->przechwyc();
             while($baza = $z->fetch()){
                 $GID = $baza['GID'];
-                $PID = $baza['PID'];
-                $czarne = $baza['czarne'];
-                $biale = $baza['biale'];
+                $czarne = $baza['graczCzarne'];
+                $biale = $baza['graczBiale'];
             }
             $z->closeCursor();
 
@@ -95,9 +96,10 @@ class game extends Controller {
             $this->db->zmienna(":gid",$GID,"int");
             $this->db->wykonaj();
 
-            $this->db->przygotuj("DELETE FROM para WHERE PID = :pid LIMIT 1");
-            $this->db->zmienna(":pid",$PID,"int");
+            $this->db->przygotuj("DELETE FROM historia WHERE gra = :gid");
+            $this->db->zmienna(":gid",$GID,"int");
             $this->db->wykonaj();
+
 
             $this->db->przygotuj("UPDATE gracz SET wygrane = wygrane + 1 WHERE login = :lo LIMIT 1");
             $this->db->zmienna(":lo",$wygral,"str");
@@ -107,7 +109,7 @@ class game extends Controller {
         }
 
         function pobierzUklad(){
-            $this->db->przygotuj("SELECT gra.uklad, gra.tura, gra.komunikat FROM gra, para WHERE gra.para = para.PID AND (para.czarne = :id OR para.biale = :id) LIMIT 1");
+            $this->db->przygotuj("SELECT uklad, tura, komunikat FROM gra WHERE graczBiale = :id OR graczCzarne = :id LIMIT 1");
             $this->db->zmienna(":id",$this->user->getUID(),"int");
             $this->db->wykonaj();
             $z = $this->db->przechwyc();
@@ -143,10 +145,18 @@ class game extends Controller {
                 }
                 $r .= "|";
             }
+
+            $historia = $this->getHistoria();
+            $h = "";
+            foreach($historia as $e){
+                if($h != "") $h .= "**";
+                $h .= implode("*",$e);
+            }
+
             if($this->tura == $this->gracz) 
-                echo $r." ||| 1 ||| ".$this->komunikat;
+                echo $r." ||| 1 ||| ".$this->komunikat." ||| ".$h;
             else
-                echo $r." ||| 0 ||| ".$this->komunikat; 
+                echo $r." ||| 0 ||| ".$this->komunikat." ||| ".$h; 
         }
 
         function czyWymiana($uklad){
@@ -178,12 +188,11 @@ class game extends Controller {
 
             $komunikat = 0;
 
-            $this->db->przygotuj("SELECT gra.GID, gra.tura FROM gra, para WHERE gra.para = para.PID AND (para.czarne = :id OR para.biale = :id) LIMIT 1");
+            $this->db->przygotuj("SELECT gra.GID, gra.tura FROM gra WHERE graczBiale = :id OR graczCzarne = :id LIMIT 1");
             $this->db->zmienna(":id",$this->user->getUID(),"int");
             $this->db->wykonaj();
             $z = $this->db->przechwyc();
             while($baza = $z->fetch()){
-                $GID = $baza['GID'];
                 if($wymiana == NULL)
                     $tura = $baza['tura'] == 1 ? 2 : 1;
                 else{
@@ -194,8 +203,17 @@ class game extends Controller {
             }
             $z->closeCursor();
 
+            //zapisz historia
+            $this->db->przygotuj("INSERT INTO historia VALUES(NULL, :gid, :figura, :zrodlo, :cel, :czas)");
+            $this->db->zmienna(":gid",$this->gid,"int");
+            $this->db->zmienna(":figura",$figura,"int");
+            $this->db->zmienna(":zrodlo",$poleZrodlo[0]."-".$poleZrodlo[1],"str");
+            $this->db->zmienna(":cel",$request->input("poleCel"),"str");
+            $this->db->zmienna(":czas",date('Y-m-d H:i:s'),"str");
+            $this->db->wykonaj();
+
             $this->db->przygotuj("UPDATE gra SET uklad = :uklad, tura = :tu, komunikat = :ko WHERE GID = :gid");
-            $this->db->zmienna(":gid",$GID,"int");
+            $this->db->zmienna(":gid",$this->gid,"int");
             $this->db->zmienna(":uklad",$Nuklad,"str");
             $this->db->zmienna(":tu",$tura,"int");
             $this->db->zmienna(":ko",$komunikat,"int");
@@ -350,13 +368,12 @@ class game extends Controller {
         }
 
         function poddaj(){
-            $this->db->przygotuj("SELECT gra.GID, gra.tura, para.PID, para.czarne, para.biale FROM gra, para WHERE gra.para = para.PID AND (para.czarne = :id OR para.biale = :id) LIMIT 1");
+            $this->db->przygotuj("SELECT GID, tura FROM gra WHERE graczBiale = :id OR graczCzarne = :id LIMIT 1");
             $this->db->zmienna(":id",$this->user->getUID(),"int");
             $this->db->wykonaj();
             $z = $this->db->przechwyc();
             while($baza = $z->fetch()){
                 $GID = $baza['GID'];
-                $PID = $baza['PID'];
             }
             $z->closeCursor();
 
@@ -364,8 +381,8 @@ class game extends Controller {
             $this->db->zmienna(":gid",$GID,"int");
             $this->db->wykonaj();
 
-            $this->db->przygotuj("DELETE FROM para WHERE PID = :pid LIMIT 1");
-            $this->db->zmienna(":pid",$PID,"int");
+            $this->db->przygotuj("DELETE FROM historia WHERE gra = :gid");
+            $this->db->zmienna(":gid",$GID,"int");
             $this->db->wykonaj();
 
             $this->db->przygotuj("UPDATE gracz SET wygrane = wygrane + 1 WHERE login = :lo LIMIT 1");
@@ -377,43 +394,65 @@ class game extends Controller {
             echo "Niestroj2021";
             exit;
         }
-        function wymien($request){
-            $pozycja = addslashes($request->input("wymiana"));
-            $figura = addslashes($request->input("figura"));
+        function wymien($pozycja,$figura){
+            $pozycja = addslashes($pozycja);
+            $figura = addslashes($figura);
             if($this->czyWymiana($this->uklad)){
-                if($pozycja < 20 && $this->gracz == 1){
+                if($pozycja < 10 && $this->gracz == 1){
                     $this->uklad[1][$pozycja] = $figura;
-                    $this->tura = $this->tura==1 ? 2 : 1;
+                    $poz = "1-".$pozycja;
+                    $this->tura = $this->tura==2 ? 1 : 2;
                     $this->komunikat = 0;
-                } else if($pozycja > 20 && $this->gracz == 2){
-                    $this->uklad[8][$pozycja] = $figura;
-                    $this->tura = $this->tura==1 ? 2 : 1;
+                } else if($pozycja > 10 && $this->gracz == 2){
+                    $poz = "8-".($pozycja-10);
+                    $this->uklad[8][$pozycja-10] = $figura;
+                    $this->tura = $this->tura==2 ? 1 : 2;
                     $this->komunikat = 0;
                 }
+                /* */ //echo $pozycja.", ".$this->gracz; exit;
+
+                $Nuklad = array();
+                for($i=0;isset($this->uklad[$i]);$i++) if($this->uklad[$i] != "") $Nuklad[] = implode(",",$this->uklad[$i]); else $Nuklad[] = "";
+                $Nuklad = implode("\r\n",$Nuklad);
+
+                $this->db->przygotuj("UPDATE gra SET uklad = :uklad, tura = :tu, komunikat = :ko WHERE GID = :gid");
+                $this->db->zmienna(":gid",$this->gid,"int");
+                $this->db->zmienna(":uklad",$Nuklad,"str");
+                $this->db->zmienna(":tu",$this->tura,"int");
+                $this->db->zmienna(":ko",$this->komunikat,"int");
+                $this->db->wykonaj();
+
+                //zapisz historia
+                if(isset($poz)){
+                    $this->db->przygotuj("INSERT INTO historia VALUES(NULL, :gid, :figura, :zrodlo, :cel, :czas)");
+                    $this->db->zmienna(":gid",$this->gid,"int");
+                    $this->db->zmienna(":figura",$figura,"int");
+                    $this->db->zmienna(":zrodlo","","str");
+                    $this->db->zmienna(":cel",$poz,"str");
+                    $this->db->zmienna(":czas",date('Y-m-d H:i:s'),"str");
+                    $this->db->wykonaj();
+                }
             }
-            $this->db->przygotuj("SELECT gra.GID FROM gra, para WHERE gra.para = para.PID AND (para.czarne = :id OR para.biale = :id) LIMIT 1");
-            $this->db->zmienna(":id",$this->user->getUID(),"int");
+            $this->zwrocUklad();
+            exit;
+        }
+        function getHistoria(){
+            $historia = array();
+            $this->db->przygotuj("SELECT figura, zrodlo, cel, czas FROM historia WHERE gra = :gid ORDEr BY RID DESC");
+            $this->db->zmienna(":gid",$this->gid,"int");
             $this->db->wykonaj();
             $z = $this->db->przechwyc();
             while($baza = $z->fetch()){
-                $GID = $baza['GID'];
+                $a = explode(" ",$baza['czas']);
+                if($baza['zrodlo'] != ""){
+                    $c = explode("-",$baza['zrodlo']);
+                    $zr = $this->litery[$c[1]].$c[0];
+                } else $zr = "-";
+                $d = explode("-",$baza['cel']);
+                $historia[] = array($baza['figura'], $zr." > ".$this->litery[$d[1]].$d[0], $a[1]);
             }
             $z->closeCursor();
-
-            $Nuklad = array();
-            for($i=0;isset($this->uklad[$i]);$i++) if($this->uklad[$i] != "") $Nuklad[] = implode(",",$this->uklad[$i]); else $Nuklad[] = "";
-            $Nuklad = implode("\r\n",$Nuklad);
-
-            $this->db->przygotuj("UPDATE gra SET uklad = :uklad, tura = :tu, komunikat = :ko WHERE GID = :gid");
-            $this->db->zmienna(":gid",$GID,"int");
-            $this->db->zmienna(":uklad",$Nuklad,"str");
-            $this->db->zmienna(":tu",$this->tura,"int");
-            $this->db->zmienna(":ko",$this->komunikat,"int");
-            $this->db->wykonaj();
-
-
-            $this->zwrocUklad();
-            exit;
+            return $historia;
         }
 
         function wyswietl(){
@@ -429,6 +468,7 @@ class game extends Controller {
                 ->with('klasa', $this)
                 ->with('litery', $this->litery)
                 ->with('tura', $this->tura)
+                ->with('historia', $this->getHistoria())
                 ->with('graczBiale', $this->graczBiale)
                 ->with('graczCzarne', $this->graczCzarne)
                 ->with('wymiana', $this->komunikat);
@@ -438,7 +478,7 @@ class game extends Controller {
             if(!empty($request->input("wyloguj"))) return $this->wyloguj();
                 $this->pobierzUklad();
             if(!empty($request->input("wymiana")) && !empty($request->input("figura")))
-                return $this->wymien($request);
+                return $this->wymien($request->input("wymiana"),$request->input("figura"));
             else if(!empty($request->input("figura")) && !empty($request->input("poleCel"))&& !empty($request->input("poleZrodlo"))) 
                 return $this->zapiszRuch($request);
             else if(!empty($request->input("poddaj")))

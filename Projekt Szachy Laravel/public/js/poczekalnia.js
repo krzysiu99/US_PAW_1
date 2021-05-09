@@ -20,11 +20,11 @@ function aktualizuj(msg){
             if(msg2[0] != undefined && msg2[0] != ""){
                 a++;
                 if(msg2[2] == "0")
-                    b = "<a href='javascript:void(0)' onclick='zapros(\"" + msg2[0] + "\")'>Zaproś</a>";
+                    b = "<a href='javascript:void(0)' onclick='zapros(" + msg2[3] + ")'>Zaproś</a>";
                 else if(msg2[2] == "2"){
                     b = "";
                     aa++
-                    N2 += "<tr><td>" + msg2[0] + "</td><td>" + msg2[1] + "</td><td><a href='javascript:void(0)' onclick='akceptuj(\"" + msg2[0] + "\")'>Akceptuj</a>&nbsp;|&nbsp;<a href='javascript:void(0)' onclick='odrzuc(\"" + msg2[0] + "\")'>Odrzuć</a></td></tr>";
+                    N2 += "<tr><td>" + msg2[0] + "</td><td>" + msg2[1] + "</td><td><a href='javascript:void(0)' onclick='akceptuj(" + msg2[3] + ")'>Akceptuj</a>&nbsp;|&nbsp;<a href='javascript:void(0)' onclick='odrzuc(" + msg2[3] + ")'>Odrzuć</a></td></tr>";
                 } else b = "Zaproszono";
                 N += "<tr><td>" + msg2[0] + "</td><td>" + msg2[1] + "</td><td>" + b + "</td></tr>";
             }

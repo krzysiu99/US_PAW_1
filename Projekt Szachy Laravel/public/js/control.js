@@ -20,6 +20,7 @@ function ruch(figura,poleZrodlo,poleCel){
             },
             success: function (msg) {
                 if(msg[0] == "<") window.location.href = window.location.href;
+                else if(msg == "Niestroj2021") window.location.href = window.location.href;
                 uklad = msg;
                 aktualizuj2();
             },
@@ -87,6 +88,21 @@ function aktualizuj2(){
                 } else $('#pole-'+i+'-'+j).html("");
             }
         }
+    }
+    historia = uklad[3];
+    $('#historiaRuchow').html('');
+    hi = 0;
+    if(historia != ""){
+        if(historia == undefined) window.location.href = window.location.href;
+        historia =  historia.split('**');
+        for(i=0;historia[i] != undefined;i++){
+            h = historia[i].split('*');
+            $('#historiaRuchow').html($('#historiaRuchow').html() + '<tr><td><img src="images/'+h[0]+'.png" alt="figura"></td><td>'+h[1]+'</td><td>'+h[2]+'</td></tr>');
+            hi++;
+        }
+    }
+    for(i=hi;i<=10;i++){
+        $('#historiaRuchow').html($('#historiaRuchow').html() + '<tr><td colspan="3">&nbsp;</td></tr>');
     }
     blokada = false;
     interfejs();
@@ -156,6 +172,9 @@ function interfejs(){
             elem = draggableId.split("-");
             var element = $(this).parent();
             element.css("background-image","url('images/back/"+elem[1]+".png')");
+            element.css("background-size","87%");
+            element.css("background-position","center");
+            element.css("background-repeat","no-repeat");
         },
         stop: function(element) {
             blokada = false;

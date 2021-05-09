@@ -7,7 +7,7 @@
 		<table class="gm">
 			<thead>
 				<tr>
-					<th colspan="10" style="font-size: 0.8em;">przytrzymując lewy przycisk myszy przesuń figurę nad pole docelowe i puść</th>
+					<th colspan="10" class="info">przytrzymując lewy przycisk myszy przesuń figurę nad pole docelowe i puść</th>
 				</tr>
 				<tr>
 					<th>&nbsp;</th>
@@ -99,12 +99,34 @@
 					</span><br>
 			<br>
 			<button onclick="poddaj();" style="background: red">Poddaj się</button>
-			<br>
 			<form action="" method="POST">
 				{{@csrf_field()}}
 				<input type="submit" name="wyloguj" value="Wyloguj">
 			</form>
 			<br>
+			<table class="historia">
+				<thead>
+					<th colspan="3">historia ruchów</th>
+				</thead>
+				<tbody id="historiaRuchow">
+					@php $linie = 0; @endphp
+                    @if(count($historia)>0)
+						@foreach($historia as $h)
+							@php $linie++; @endphp
+							<tr>
+								<td><img src="{{$folder}}/images/{{$h[0]}}.png" alt="figura"></td>
+								<td>{{$h[1]}}</td>
+								<td>{{$h[2]}}</td>
+							</tr>
+						@endforeach
+					@endif
+					@for($i=$linie;$i<=10;$i++)
+						<tr>
+							<td colspan="3">&nbsp;</td>
+						</tr>
+					@endfor
+				</tbody>
+			</table>
 		</section>
 	</main>
 	<div id="wymiana" @if($wymiana != 0 && $tura == $kol) style="display:block" @endif>

@@ -20,11 +20,9 @@ table td, table th{
     margin: 0;
     padding: 0;
     text-align: center;
-    background-size: 85%;
-    background-repeat: no-repeat;
-    background-position: center;
     background: white;
     border: none;
+    background-repeat: no-repeat;
 }
 th{
     min-width: auto !IMPORTANT;
@@ -32,6 +30,9 @@ th{
 }
 .b {
     background: #FF3333;
+}
+.gm thead .info{
+    font-size: 1vw;
 }
 table th{
     width: 25px;
@@ -56,14 +57,17 @@ td img{
 main{
     width: max-content;
     margin: 20px auto;
+    height: max-content;
 }
 
 section.game{
     widtH: 250px;
-    height: 100%;
+    height: calc(100vh - 116px);
+    max-heighT: calc(100vh - 116px);
     background: rgb(221, 221, 221);
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
+    overflow: hidden;
 }
 section.game:after{
     content: "© Krzysztof Niestrój 2021";
@@ -82,12 +86,12 @@ section h2{
     text-align: center;
     padding: 10px 0;
 }
-section table.min img{
+section table.min img, section table.historia img{
     width: 50px;
     height: 50px;
     margin: 0;
 }
-section table.min {
+section table.min, section table.historia {
     border: none;
     margin: 0 auto;
     floaT: unset;
@@ -133,6 +137,47 @@ main section button, main section input[type=submit]{
 main section button:hover, main section input[type=submit]:hover{
     background: black;
     cursor: pointer;
+}
+section table.historia {
+    margin: 5px;
+    bordeR: solid 1px rgb(160, 160, 160);
+    overflow-y: auto;
+    max-height: calc(100vh - 530px);
+    display: block;
+    overflow-x: hidden;
+}
+section table.historia thead, section table.historia tbody{
+    display: table;
+    width: 239px;
+}
+
+section table.historia img{
+    widtH: 30px;
+    heighT: 30px;
+    margin: 5px;
+}
+section table.historia td:nth-child(3n+1){
+    width: 40px;
+    max-width: 40px;
+    min-width: 40px;
+    height: 25px;
+    line-heighT: 25px;
+}
+section table.historia th{
+    background: rgb(160, 160, 160);
+    color: white;
+}
+section table.historia td:nth-child(3n+2){
+    font-size: 70%;
+    width: 70px;
+    height: 25px;
+    line-heighT: 25px;
+}
+section table.historia td:nth-child(3n){
+    font-size: 70%;
+    height: 25px;
+    line-heighT: 25px;
+    width: auto;
 }
 
 #wymiana {

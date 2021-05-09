@@ -33,7 +33,7 @@
                                 <td>{{$g[1]}}</td>
                                 <td>
                                     @if($g[2] == 0)
-                                        <a href="javascript:void(0)" onclick="zapros('{{$g[0]}}')">Zaproś</a>
+                                        <a href="javascript:void(0)" onclick="zapros({{$g[3]}})">Zaproś</a>
                                     @elseif($g[2] == 2)
                                         &nbsp;
                                     @else
@@ -77,11 +77,11 @@
                         @foreach($zaproszenia as $a)
                             @php $linie++; @endphp
                             <tr>
-                                <td>{{$a[0]}}</td>
-                                <td>{{$a[1]}}</td>
+                                <td>{{$user->nick($a)}}</td>
+                                <td>{{$user->wygrane($a)}}</td>
                                 <td>
-                                    <a href="javascript:void(0)" onclick="akceptuj('{{$a[0]}}')">Akceptuj</a>&nbsp;|
-                                    <a href="javascript:void(0)" onclick="odrzuc('{{$a[0]}}')">Odrzuć</a>
+                                    <a href="javascript:void(0)" onclick="akceptuj({{$a}})">Akceptuj</a>&nbsp;|
+                                    <a href="javascript:void(0)" onclick="odrzuc({{$a}})">Odrzuć</a>
                                 </td>
                             </tr>
                         @endforeach

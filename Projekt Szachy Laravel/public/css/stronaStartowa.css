@@ -69,6 +69,7 @@ section input[type=text], section input[type=password] {
     color: white;
     margin-left: 65px;
     margin-top: -10px;
+    cursor: pointer;
 }
 #wrapper section input[type=submit]:nth-child(2n+1){
     floaT: right;
