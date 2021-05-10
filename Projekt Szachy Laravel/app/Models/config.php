@@ -1,10 +1,16 @@
 <?php
+/*                    Projekt Szachy Online                        */
+/*  Języki Programowania Dynamicznych Stron Internetowych          */
+/*                     Krzysztof Niestrój                          */
+/*              krzysztof.niestroj@o365.us.edu.pl                  */
+/*                     Framework Laravel                           */
+/*                         10.05.2021                              */
+
 namespace App\Models;
 class config{
     public $skrypt;
     public $folder;
     public $user;
-    public $action_root;
     public $root_path;
 
     function __construct(){
@@ -14,7 +20,6 @@ class config{
             $this->folder = dirname($this->skrypt);
         else 
             $this->folder = dirname($this->skrypt."index.php");
-        $this->action_root = $this->folder."/index.php?action=";
         $this->root_path = dirname(__FILE__);
     }
 }

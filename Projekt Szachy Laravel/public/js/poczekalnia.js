@@ -1,15 +1,21 @@
+/*                    Projekt Szachy Online                        */
+/*  Języki Programowania Dynamicznych Stron Internetowych          */
+/*                     Krzysztof Niestrój                          */
+/*              krzysztof.niestroj@o365.us.edu.pl                  */
+/*                     Framework Laravel                           */
+/*                         10.05.2021                              */
+
 var status = true;
 
-$.ajaxSetup({
+$.ajaxSetup({ //dla lavarela
 headers: {
     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 }
 });
 
-function aktualizuj(msg){
+function aktualizuj(msg){ //aktualizuj listę dynamicznie
     if(msg == "1" || msg[0] == "<"){
         window.location.href = window.location.href;
-        console.log('start!');
     } else {
         N = "";
         N2 = "";
@@ -44,8 +50,8 @@ function aktualizuj(msg){
     }
 }
 
-function sprawdz(){
-    status = false;
+function sprawdz(){ //sprawdzanie dynamiczne przez ajax listy graczy
+    status = true;
 
     $.ajax({
 		type: "POST",
@@ -55,22 +61,22 @@ function sprawdz(){
 		},
 		success: function (msg) {
             aktualizuj(msg);
-            status = true;
-            //console.log(msg);
+            status = false;
 		},
-		error: function (xhr, status, error) {
-			status = true;
+		error: function (xhr, stat, error) {
+            alert(xhr + stat + error);
+			status = false;
 		}
 	});
 }
 
-function czekaj(){
+function czekaj(){ //co 5 sekund sprawdź listę
     const loop = setInterval(function(){
         if(status) sprawdz();
     } ,5000);
 }
 
-function zapros(nick){
+function zapros(nick){ //zaproś do gry
     if(status){
         status = false;
 
@@ -84,13 +90,13 @@ function zapros(nick){
                 sprawdz();
             },
             error: function (xhr, status, error) {
-                zapros(nick);
+                alert(xhr + status + error);
             }
         });
     }
 }
 
-function odrzuc(nick){
+function odrzuc(nick){ //odrzuć zaproszenie
     if(status){
         status = false;
         $.ajax({
@@ -104,13 +110,13 @@ function odrzuc(nick){
                 sprawdz();
             },
             error: function (xhr, status, error) {
-                odrzuc(nick);
+                alert(xhr + status + error);
             }
         });
     }
 }
 
-function akceptuj(nick){
+function akceptuj(nick){ //akceptuj zaproszenie
     if(status){
         status = false;
         $.ajax({
@@ -123,12 +129,8 @@ function akceptuj(nick){
                 sprawdz();
             },
             error: function (xhr, status, error) {
-                akceptuj(nick);
+                alert(xhr + status + error);
             }
         });
     }
 }
-
-// $(document).ready(function() {
-//     czekaj();
-// });

@@ -48,7 +48,7 @@ return [
             'url' => env('192.168.8.254'),
             'host' => env('DB_HOST', '192.168.8.254'),
             'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'szachy'),
+            'database' => env('DB_DATABASE', 'niestroj21_szachy'),
             'username' => env('DB_USERNAME', 'root'),
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),

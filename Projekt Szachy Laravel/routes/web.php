@@ -15,10 +15,10 @@ use Illuminate\Support\Facades\Route;
 //Config::get('constants.options');
 if(session_status() == PHP_SESSION_NONE) session_start();
 
-if(isset($_SESSION['user'])){
+if(isset($_SESSION['user'])){ //jeśli zalogowany to wczytaj poczekalnie
     Route::post('/', "App\Http\Controllers\poczekalnia@wykonaj");
     Route::get('/', "App\Http\Controllers\poczekalnia@wykonaj");
-}else{
+} else { //a jeśli nie to strone logowania
     Route::get('/', "App\Http\Controllers\stronaStartowa@wykonaj");
     Route::post('/', "App\Http\Controllers\stronaStartowa@logowanie");
 }

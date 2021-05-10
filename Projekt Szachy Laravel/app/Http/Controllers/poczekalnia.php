@@ -1,10 +1,15 @@
 <?php
+/*                    Projekt Szachy Online                        */
+/*  Języki Programowania Dynamicznych Stron Internetowych          */
+/*                     Krzysztof Niestrój                          */
+/*              krzysztof.niestroj@o365.us.edu.pl                  */
+/*                     Framework Laravel                           */
+/*                         10.05.2021                              */
 
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\db1;
 use App\Models\config;
 use App\Models\msg1;
 use App\Models\user1;
@@ -12,19 +17,17 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\game;
 
 class poczekalnia extends Controller {
-        private $db;
         private $config;
         private $msg;
         private $user;
 
-        function __construct(){ //<==================== do zmiany !!!
-            $this->db = new Db1();
+        function __construct(){
             $this->config = new config();
             $this->msg = new msg1();
             $this->user = new user1();
         }
 
-        function wyloguj(){
+        function wyloguj(){ //wylogowanie z systemu
             if(session_status() == PHP_SESSION_NONE) session_start();
             $_SESSION['wyloguj'] = true;
             unset($_SESSION['user']);
@@ -32,59 +35,51 @@ class poczekalnia extends Controller {
             exit;
         }
 
-        function czyGra(){
-            
-            $id = $this->user->getUID();
-            
-            $this->db->przygotuj("SELECT GID FROM gra WHERE graczBiale = :id OR graczCzarne = :id LIMIT 1");
-            $this->db->zmienna(":id",$id,"int");
-            $this->db->wykonaj();
-            $z = $this->db->przechwyc();
+        function czyGra(){ //sprawdzanie czy jest aktywna gra dla wybranego użytkownika
+            $gry = DB::table('gra')->where('graczBiale', $this->user->getUID())->orWhere('graczCzarne', $this->user->getUID())->get();
             $a = false;
-            while($baza = $z->fetch()){
+            foreach ($gry as $ee){
                 $a = true;
+                break;
             }
-            $z->closeCursor();
             if($a) return true;
             else return false;
         }
 
-        function nowaGra($u1,$u2){
-            
+        function nowaGra($u1,$u2){ //tworzenie nowej gry po sparowaniu
             $a = rand(1,2);
             $uk = "\r\n,11,12,13,14,15,16,17,18,\r\n,1,2,3,4,5,6,7,8,\r\n,,,,,,,,,\r\n,,,,,,,,,\r\n,,,,,,,,,\r\n,,,,,,,,,\r\n,21,22,23,24,25,26,27,28,\r\n,31,32,33,34,35,36,37,38,";
-
-            $this->db->przygotuj("INSERT INTO gra VALUES (NULL, 1, :uk, '', :data, :g1, :g2)");
             if($a%2 == 0) {
-                $this->db->zmienna(":g1",$u1,"int");
-                $this->db->zmienna(":g2",$u2,"int");
+                $g1 = $u1;
+                $g2 = $u2;
             } else {
-                $this->db->zmienna(":g1",$u2,"int");
-                $this->db->zmienna(":g2",$u1,"int");
+                $g1 = $u2;
+                $g2 = $u1;
             }
-            $this->db->zmienna(":uk",$uk,"str");
-            $this->db->zmienna(":data",date('Y-m-d'),"str");
-            $this->db->wykonaj();
-
+            DB::table('gra')->insert(array(
+                'GID' => NULL, 
+                'tura' => 1,
+                'uklad' => $uk,
+                'komunikat' => 0,
+                'data_rozpoczecia' => date('Y-m-d'),
+                'graczBiale' => $g1,
+                'graczCzarne' => $g2
+            ));
 
             echo 1;
             exit;
         }
 
-        function akceptuj($us){
+        function akceptuj($us){ //akceptacja zaproszenia do gry
             $akceptowany = (int) $us;
             
             $login = $this->user->getlogin();
             $id = $this->user->getUID();
             $zaproszenia = $this->user->getZaproszenia();
 
-            if($this->user->czyOnline($akceptowany)){
-                if($this->czyJest($zaproszenia,$akceptowany)) { //czy wskazany gracz zaprosił mnie
-                    $this->db->przygotuj("DELETE FROM zaproszenie WHERE zaproszony = :ja AND zapraszajacy = :on");
-                    $this->db->zmienna(":on",$akceptowany,"int");
-                    $this->db->zmienna(":ja",$id,"int");
-                    $this->db->wykonaj();
-
+            if($this->user->czyOnline($akceptowany)){ //sprawdzanie czy gracz jest online
+                if($this->czyJest($zaproszenia,$akceptowany)) { //sprawdzanie czy wskazany gracz zaprosił obecnego użytkownika
+                    DB::table('zaproszenie')->where('zaproszony', $id)->delete();
                     $this->nowaGra($id,$akceptowany);
                 }
             }
@@ -92,79 +87,62 @@ class poczekalnia extends Controller {
         }
 
 
-        function odrzuc($us){
+        function odrzuc($us){ //odrzucanie zaproszenia
             $odrzucany = (int) $us;
             
             $login = $this->user->getlogin();
             $id = $this->user->getUID();
             $zaproszenia = $this->user->getZaproszenia();
 
-            if($this->user->czyOnline($odrzucany)){
-                if($this->czyJest($zaproszenia,$odrzucany)) { //czy wskazany gracz zaprosił mnie
-                    $this->db->przygotuj("DELETE FROM zaproszenie WHERE zaproszony = :ja AND zapraszajacy = :on");
-                    $this->db->zmienna(":on",$odrzucany,"int");
-                    $this->db->zmienna(":ja",$id,"int");
-                    $this->db->wykonaj();
-                }
+            if($this->user->czyOnline($odrzucany)){ //sprawdzanie czy wskazany gracz zaprosił obecnego użytkownika
+                if($this->czyJest($zaproszenia,$odrzucany)) //czy wskazany gracz zaprosił mnie
+                    DB::table('zaproszenie')->where('zaproszony', $id)->where('zapraszajacy', $odrzucany)->delete();
             }
             exit;
         }
 
-        function sprawdz(){
-            
-            $login = $this->user->getlogin();
-            $this->db->przygotuj("UPDATE gracz SET ostatnio_online = :daca WHERE login = :lo LIMIT 1");
-            $this->db->zmienna(':daca',date('Y-m-d H:i:s'),"str");
-            $this->db->zmienna(':lo',$login,"str");
-            $this->db->wykonaj();
-
+        function sprawdz(){ //dynamiczne sprawdzanie listy online i zaproszeń przez ajax
+            DB::table('gracz')->where('login', $this->user->getlogin())->update(array(
+                'ostatnio_online'=>date('Y-m-d H:i:s')
+            ));
             $zm = $this->listaOnline();
             for($i = 0; isset($zm[$i]);$i++){
                 $zm[$i] = implode(" | ",$zm[$i]);
             }
             echo implode(" || ",$zm);
-            
             $this->msg = $this->msg->display();
             if($this->msg != NULL) echo $this->msg;
         }
 
-        function zapros($us){
+        function zapros($us){ //zaproszenie do gry
             $zaproszony = (int) $us;
             
             $login = $this->user->getlogin();
             $id = $this->user->getUID();
 
-            if($this->user->czyOnline($zaproszony)){
-                $this->db->przygotuj("SELECT zaproszajacy FROM zaproszenie WHERE zaproszony = :zaproszony");
-                $this->db->zmienna(":zaproszony",$zaproszony,"int");
-                $this->db->wykonaj();
-                $z = $this->db->przechwyc();
-
+            if($this->user->czyOnline($zaproszony)){ //sprawdzanie czy uzytkownik jest online
+                $zaproszenia = DB::table('zaproszenie')->where('zaproszony', $zaproszony)->get();
                 $lista = array();
-                while($baza = $z->fetch()){
-                    $lista[] = $baza['zaproszajacy'];
+                foreach($zaproszenia as $e){
+                    $lista[] = $e->zapraszajacy;
                 }
-                $z->closeCursor();
 
-                if(!$this->czyJest($lista,$id)) { //czy już go zaprosiłem
-                    if($this->czyJest($this->user->getZaproszenia(),$zaproszony)) { //przy podwójnym zaproszneiu
-                        $this->db->przygotuj("DELETE FROM zaproszenie WHERE zaproszony = :ja AND zapraszajacy = :on");
-                        $this->db->zmienna(":on",$akceptowany,"int");
-                        $this->db->zmienna(":ja",$id,"int");
-                        $this->db->wykonaj();
-
+                if(!$this->czyJest($lista,$id)) { //sprawdzanie czy obecny gracz już zaprosił tamtego gracza
+                    if($this->czyJest($this->user->getZaproszenia(),$zaproszony)) { //przy wzajemnym jednoczesnym zaproszeniu automatyczna akceptacja
+                        DB::table('zaproszenie')->where('zaproszony', $id)->where('zapraszajacy', $zaproszony)->delete();
                         $this->nowaGra($id,$zaproszony);
                         exit;
                     }
-                    $this->db->przygotuj("INSERT INTO zaproszenie VALUES (NULL, :zapraszajacy, :zaproszony)");
-                    $this->db->zmienna(":zapraszajacy",$id,"int");
-                    $this->db->zmienna(":zaproszony",$zaproszony,"int");
-                    $this->db->wykonaj();
+                    DB::table('zaproszenie')->insert(array(
+                        'ZID' => NULL, 
+                        'zapraszajacy' => $id,
+                        'zaproszony' => $zaproszony
+                    ));
                 }
             }
         }
 
-        function czyJest($arr,$id){ //czy w tablicy zaproszeń jest id gracza z parametru 2
+        function czyJest($arr,$id){ //sprawdzanie czy w liście zaproszeń obecnego użytkownika jest id wskazanego gracza
             if($arr != ""){
                 foreach($arr as $e){
                     if($e == $id){
@@ -176,50 +154,46 @@ class poczekalnia extends Controller {
             return false;
         }
 
-        function listaOnline(){
+        function listaOnline(){ //lista graczy online oraz zaproszeń
             $gracze = array();
             
-            $login = $this->user->getlogin();
             $id = $this->user->getUID();
             $zapr = $this->user->getZaproszenia();
 
             
-            $this->db->przygotuj("SELECT t1.login, t1.UID, t1.wygrane, t1.ostatnio_online FROM gracz t1 LEFT JOIN gra t2 ON t2.graczCzarne = t1.UID OR t2.graczBiale = t1.UID WHERE (t2.graczCzarne IS NULL OR t2.graczBiale IS NULL) AND t1.login != :lo");
-            $this->db->zmienna(":lo",$login,"str");
-            $this->db->wykonaj();
-            $z = $this->db->przechwyc();
+            $lista = DB::table("gracz as t1")->leftJoin("gra as t2", function ($join) {
+                $join->on('t2.graczCzarne','t1.UID')
+                ->orOn('t2.graczBiale','t1.UID')
+                ->where('t2.graczCzarne', NULL)
+                ->orWhere('t2.graczBiale', NULL);
+            })->select(DB::raw('t1.login as login, t1.UID as UID, t1.wygrane as wygrane, t1.ostatnio_online as ostatnio_online'))->get();
 
-            while($baza = $z->fetch()){
-                if($this->user->czyOnline($baza['UID'])){
-                    $this->db->przygotuj("SELECT zapraszajacy FROM zaproszenie WHERE zaproszony = :id");
-                    $this->db->zmienna(":id",$baza['UID'],"int");
-                    $this->db->wykonaj();
-                    $z1 = $this->db->przechwyc();
+            foreach($lista as $e){
+                if($this->user->czyOnline($e->UID) && $e->UID != $this->user->getUID()){
+                    $z = DB::table('zaproszenie')->where('zaproszony', $e->UID)->get();
                     $a = false;
-                    while($baza1 = $z1->fetch()){
-                        if($baza1['zapraszajacy'] == $id) {
+                    foreach($z as $ee){
+                        if($ee->zapraszajacy == $id) {
                             $a = true;
-                            $gracze[] = array($baza['login'],$baza['wygrane'],1,$baza['UID']);
+                            $gracze[] = array($e->login,$e->wygrane,1,$e->UID);
                             break;
                         }
                     }
-                    $z1->closeCursor();
                     if(!$a){
-                        if($this->czyJest($zapr,$baza['UID']))
-                            $gracze[] = array($baza['login'],$baza['wygrane'],2,$baza['UID']);
+                        if($this->czyJest($zapr,$e->UID))
+                            $gracze[] = array($e->login,$e->wygrane,2,$e->UID);
                         else 
-                            $gracze[] = array($baza['login'],$baza['wygrane'],0,$baza['UID']);
+                            $gracze[] = array($e->login,$e->wygrane,0,$e->UID);
                     }
                 }
             }
-            $z->closeCursor();
 
             return $gracze;
 
         }
 
 
-        function wyswietl(){
+        function wyswietl(){ //wyświetlanie widoku
             $pozostalo = (7-((strtotime(date("Y-m-d H:i:s")) - strtotime($this->user->getOstGra().date("H:i:s")))/3600/24));
 
             $gracze = $this->listaOnline();
@@ -245,18 +219,18 @@ class poczekalnia extends Controller {
                 ->with('folder', $this->config->folder);
         }
 
-        function wykonaj(Request $request){
-            if($this->czyGra()) {
+        function wykonaj(Request $request){ //punkt wejścia do klasy dla metod GET i POST
+            if($this->czyGra()) { //sprawdzanie czy gracze mają już stworozną grę
                 $game = new game();
-                return $game->wykonaj($request);
+                return $game->wykonaj($request); //jeśli tak to wejście do gry
             } else {
-                if(!empty($request->input("sprawdz"))) return $this->sprawdz();
-                if(!empty($request->input("wyloguj"))) return $this->wyloguj();
-                if(!empty($request->input("zapros"))) return $this->zapros($request->input("zapros"));
-                if(!empty($request->input("odrzuc"))) return $this->odrzuc($request->input("odrzuc"));
-                if(!empty($request->input("akceptuj"))) return $this->akceptuj($request->input("akceptuj"));
+                if(!empty($request->input("sprawdz"))) return $this->sprawdz(); //sprawdzanie dynamiczne listy ajax
+                if(!empty($request->input("wyloguj"))) return $this->wyloguj(); //wylogowanie z systemu
+                if(!empty($request->input("zapros"))) return $this->zapros($request->input("zapros")); //zapraszanie użytkownika do gry
+                if(!empty($request->input("odrzuc"))) return $this->odrzuc($request->input("odrzuc")); //odrzucanie zaproszeń
+                if(!empty($request->input("akceptuj"))) return $this->akceptuj($request->input("akceptuj")); //akceptacja zaproszeń
 
-                return $this->wyswietl();   
+                return $this->wyswietl(); //widok strony  
             }
         }
     }

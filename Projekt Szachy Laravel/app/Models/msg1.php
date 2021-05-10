@@ -1,4 +1,11 @@
 <?php
+/*                    Projekt Szachy Online                        */
+/*  Języki Programowania Dynamicznych Stron Internetowych          */
+/*                     Krzysztof Niestrój                          */
+/*              krzysztof.niestroj@o365.us.edu.pl                  */
+/*                     Framework Laravel                           */
+/*                         10.05.2021                              */
+
 namespace App\Models;
 
 class msg1 {
@@ -6,10 +13,10 @@ class msg1 {
     public function __construct() {
         $this->msg = array();
     }
-    function add($text) {
+    function add($text) { //dodaj komunikat do buforu
         $this->msg[] = $text;
     }
-    function display(){
+    function display(){ //wyświetl wszystkie komunikaty
         if(count($this->msg)==0) return NULL;
         else{
             $a = "";

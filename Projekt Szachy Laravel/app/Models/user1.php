@@ -1,5 +1,13 @@
 <?php
+/*                    Projekt Szachy Online                        */
+/*  Języki Programowania Dynamicznych Stron Internetowych          */
+/*                     Krzysztof Niestrój                          */
+/*              krzysztof.niestroj@o365.us.edu.pl                  */
+/*                     Framework Laravel                           */
+/*                         10.05.2021                              */
+
 namespace App\Models;
+use Illuminate\Support\Facades\DB;
 
 class user1 {
     public $user;
@@ -10,31 +18,25 @@ class user1 {
 
     function __construct(){
         if(session_status() == PHP_SESSION_NONE) session_start();
-        $this->user = isset($_SESSION['user']) ? $_SESSION['user'] : NULL;
+        $this->user = isset($_SESSION['user']) ? $_SESSION['user'] : NULL; //spr czy jest się zalogowanym
 
 
 
         $id = (int)$this->user;
-        $db = new db1();
-        $db->przygotuj("SELECT * FROM gracz WHERE UID = :id LIMIT 1");
-        $db->zmienna(":id",$id,"int");
-        $db->wykonaj();
-        $z = $db->przechwyc();
-        while($baza = $z->fetch()){
-            $this->login = $baza['login'];
-            $this->wygrane = $baza['wygrane'];
-            $this->ostGra = $baza['ostatnia_gra'];
-        }
-        $z->closeCursor();
 
-        $db->przygotuj("SELECT zapraszajacy FROM zaproszenie WHERE zaproszony = :id");
-        $db->zmienna(":id",$id,"int");
-        $db->wykonaj();
-        $z = $db->przechwyc();
-        while($baza = $z->fetch()){
-            $this->zaproszenia[] = $baza['zapraszajacy'];
+        $gracz = DB::table('gracz')->where('UID', $id)->get();
+        foreach($gracz as $e){
+            $this->login = $e->login;
+            $this->wygrane = $e->wygrane;
+            $this->ostGra = $e->ostatnia_gra;
+            break;
         }
-        $z->closeCursor();
+
+        //lista zaproszeń do gry
+        $zapr = DB::table('zaproszenie')->where('zaproszony', $id)->get();
+        foreach($zapr as $e){
+            $this->zaproszenia[] = $e->zapraszajacy;
+        }
         
     }
     function getLogin(){
@@ -49,43 +51,39 @@ class user1 {
         else 
             return $this->zaproszenia;
     }
-    function nick($id){
-        $db = new db1();
-        $db->przygotuj("SELECT login FROM gracz WHERE UID = :id LIMIT 1");
-        $db->zmienna(":id",$id,"int");
-        $db->wykonaj();
-        $z = $db->przechwyc();
-        $nick = NULL;
-        while($baza = $z->fetch()){
-            $nick = $baza['login'];
+    function nick($id){ //zwraca nick gracza o podanym id
+        $gracz = DB::table('gracz')->where('UID', $id)->get();
+        $nick = null;
+        foreach($gracz as $e){
+            $nick = $e->login;
+            break;
         }
-        $z->closeCursor();
         return $nick;
     }
-    function czyOnline($id){
+    function czyOnline($id){ //spr czy wybrany gracz jest online
         $id = (int) $id;
-        $db = new db1();
-        $db->przygotuj("SELECT t1.login, t1.UID, t1.wygrane, t1.ostatnio_online FROM gracz t1 LEFT JOIN gra t2 ON t2.graczCzarne = t1.UID OR t2.graczBiale = t1.UID WHERE (t2.graczCzarne IS NULL OR t2.graczBiale IS NULL) AND t1.UID = :id");
-        $db->zmienna(":id",$id,"int");
-        $db->wykonaj();
-        $z = $db->przechwyc();
-        while($baza = $z->fetch()){
-            if(strtotime($baza['ostatnio_online']) > strtotime(date("Y-m-d H:i:s"))-15) return true;
+        $gracz = DB::table("gracz as t1")->leftJoin("gra as t2", function ($join) {
+            $join->on('t2.graczCzarne','t1.UID')
+            ->orOn('t2.graczBiale','t1.UID')
+            ->where('t2.graczCzarne', NULL)
+            ->orWhere('t2.graczBiale', NULL);
+        })->select(DB::raw('t1.login as login, t1.UID as UID, t1.wygrane as wygrane, t1.ostatnio_online as ostatnio_online'))->get();
+        foreach($gracz as $e){
+            if($e->UID == $id){
+                if(strtotime($e->ostatnio_online) > strtotime(date("Y-m-d H:i:s"))-15) 
+                    return true;
+                else 
+                    return false;
+            }
         }
-        $z->closeCursor();
-        return false;
     }
-    function wygrane($id){
-        $db = new db1();
-        $db->przygotuj("SELECT wygrane FROM gracz WHERE UID = :id LIMIT 1");
-        $db->zmienna(":id",$id,"int");
-        $db->wykonaj();
-        $z = $db->przechwyc();
+    function wygrane($id){ //ile wygranych ma gracz o podanym id
+        $gracz = DB::table('gracz')->where('UID', $id)->get();
         $wygrane = 0;
-        while($baza = $z->fetch()){
-            $wygrane = $baza['wygrane'];
+        foreach($gracz as $e){
+            $wygrane = $e->wygrane;
+            break;
         }
-        $z->closeCursor();
         return $wygrane;
     }
     function getWygrane(){

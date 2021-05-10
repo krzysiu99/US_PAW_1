@@ -1,38 +1,43 @@
+/*                    Projekt Szachy Online                        */
+/*  Języki Programowania Dynamicznych Stron Internetowych          */
+/*                     Krzysztof Niestrój                          */
+/*              krzysztof.niestroj@o365.us.edu.pl                  */
+/*                     Framework Laravel                           */
+/*                         10.05.2021                              */
+
 var uklad = [];
 var blokada = false;
 
-$.ajaxSetup({
+$.ajaxSetup({ //dla lavarela
     headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     }
 });
 
-function ruch(figura,poleZrodlo,poleCel){
-    //if(!blokada){
-        blokada = true;
-        $.ajax({
-            type: "POST",
-            url: "index.php",
-            data: {
-                figura: figura,
-                poleCel: poleCel,
-                poleZrodlo, poleZrodlo
-            },
-            success: function (msg) {
-                if(msg[0] == "<") window.location.href = window.location.href;
-                else if(msg == "Niestroj2021") window.location.href = window.location.href;
-                uklad = msg;
-                aktualizuj2();
-            },
-            error: function (xhr, status, error) {
-                alert(error);
-            }
-        });
-    //}
+function ruch(figura,poleZrodlo,poleCel){ //wykonaj ruch
+    blokada = true;
+    $.ajax({
+        type: "POST",
+        url: "index.php",
+        data: {
+            figura: figura,
+            poleCel: poleCel,
+            poleZrodlo, poleZrodlo
+        },
+        success: function (msg) {
+            if(msg[0] == "<") window.location.href = window.location.href;
+            else if(msg == "Niestroj2021") window.location.href = window.location.href;
+            uklad = msg;
+            aktualizuj2();
+        },
+        error: function (xhr, status, error) {
+            alert(error);
+        }
+    });
 }
 
-function poddaj(){
-    if(!blokada){
+function poddaj(){ //poddaj się
+    if(!blokada){ //sprawdzanie czy działa już jakiś inny skrypt, jeśli tak to blokada = true
         blokada = true;
         $.ajax({
             type: "POST",
@@ -51,7 +56,7 @@ function poddaj(){
     }
 }
 
-function sprawdz2(){
+function sprawdz2(){ //dynamiczne sprawdzanie układu szachownicy
     if(!blokada){
         blokada = true;
         $.ajax({
@@ -72,7 +77,7 @@ function sprawdz2(){
     }
 }
 
-function aktualizuj2(){
+function aktualizuj2(){ //aktualizowanie układu szachownicy
     uklad = uklad.split(" ||| ");
     wymianaV = uklad[2];
     uklad1 = uklad[0].split("|");
@@ -81,7 +86,6 @@ function aktualizuj2(){
             uklad2 = uklad1[i].split(".");
             for(j=1;j<=8;j++){
                 if(uklad2[j] != undefined && uklad2[j] != ""){
-                    //elem = uklad2[j].split(",");
                     uklad3 = uklad2[j].split(",");
                     if(uklad[1] == 0 || wymianaV != "0") uklad3[1] = "figuraWroga";
                     $('#pole-'+i+'-'+j).html("<img src='images/" + uklad3[0] + ".png' alt='figura' id='figura-" + uklad3[0] + "' class='" + uklad3[1] + "'>");
@@ -135,7 +139,7 @@ function aktualizuj2(){
     }
 }
 
-function wymiana(pozycja,figura){
+function wymiana(pozycja,figura){ //wymiana piona
     if(!blokada){
         blokada = true;
         $.ajax({
@@ -157,11 +161,7 @@ function wymiana(pozycja,figura){
     }
 }
 
-// $(document).ready(function() {
-//     interfejs();
-// });
-
-function interfejs(){
+function interfejs(){ //ożywienie interfejsu - aktywacja przesuwania figur
     
     $(".figuraMoja").draggable({
         //handle: '.storI',
@@ -205,7 +205,7 @@ function interfejs(){
     });
 }
 
-function czekaj2(){
+function czekaj2(){ //co 5 sekund sprawdzanie układu gry
     const loop = setInterval(function(){
         sprawdz2();
         clearInterval(loop);
