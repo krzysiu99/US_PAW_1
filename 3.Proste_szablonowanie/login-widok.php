@@ -21,4 +21,5 @@
                 ?>
             </fieldset>
         </form>
+        <p>login: admin, hasło: 12345</p>
 <?php include_once("widok-footer.php"); ?>

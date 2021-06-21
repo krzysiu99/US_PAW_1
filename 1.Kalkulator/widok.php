@@ -38,9 +38,9 @@
                         </td>
                         <td>
                             <select name="procent" class="styl" id="procent">
-                                <option <?php if(isset($_POST['procent']) && $_POST['procent'] == "3.5 %") echo "selected";?>>3.5 %</option>
-                                <option <?php if(isset($_POST['procent']) && $_POST['procent'] == "5 %") echo "selected";?>>5 %</option>
-                                <option <?php if(isset($_POST['procent']) && $_POST['procent'] == "8 %") echo "selected";?>>8 %</option>
+                                <option value="1"<?php if(isset($_POST['procent']) && $_POST['procent'] == "1") echo "selected";?>>3.5 %</option>
+                                <option value="2"<?php if(isset($_POST['procent']) && $_POST['procent'] == "2") echo "selected";?>>5 %</option>
+                                <option value="3"<?php if(isset($_POST['procent']) && $_POST['procent'] == "3") echo "selected";?>>8 %</option>
                             </select>
                         </td>
                     </tr>

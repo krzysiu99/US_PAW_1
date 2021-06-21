@@ -10,8 +10,8 @@
 
     //sprawdzenie
     switch($procent){
-        case "3.5 %"; $procent = 3.5; break;
-        case "5 %"; $procent = 5; break;
+        case "1"; $procent = 3.5; break;
+        case "2"; $procent = 5; break;
         default: $procent = 8;
     }
 

@@ -48,7 +48,7 @@
             } else return true;
         }
         function wyswietl(){
-            include('lib/smarty/Smarty.class.php');
+            include('lib/Smarty/Smarty.class.php');
             $smarty = new smarty();
             global $config;
             $smarty->assign('folder', $config->folder);

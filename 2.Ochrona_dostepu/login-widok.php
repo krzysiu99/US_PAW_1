@@ -27,5 +27,6 @@
                 ?>
             </fieldset>
         </form>
+        <p>login: admin, hasło: 12345</p>
     </body>
 </html>
